@@ -11,7 +11,10 @@ from helpers import (
     register_departure,
 )
 
+from models.database import initialize_db
+
 def main():
+    initialize_db()  # Ensure the database is initialized
     while True:
         menu()
         choice = input("> ")

@@ -1,4 +1,3 @@
-from models import initialize_db, Session
 from models.owner import Owner
 from models.car import Car
 import datetime
@@ -8,49 +7,36 @@ def exit_program():
     exit()
 
 def list_owners():
-    session = Session()
-    owners = Owner.get_all(session)
+    owners = Owner.get_all()
     for owner in owners:
         print(owner)
-    session.close()
 
 def find_owner_by_id():
-    session = Session()
     owner_id = input("Enter the owner's id: ")
-    owner = Owner.find_by_id(session, owner_id)
+    owner = Owner.find_by_id(owner_id)
     print(owner) if owner else print(f'Owner with id {owner_id} not found')
-    session.close()
 
 def create_owner():
-    session = Session()
     name = input("Enter the owner's name: ")
-    owner = Owner.create(session, name)
-    print(f'Success: {owner}')
-    session.close()
+    owner_id = Owner.create(name)
+    print(f'Owner created with id: {owner_id}')
 
 def delete_owner():
-    session = Session()
     owner_id = input("Enter the owner's id: ")
-    Owner.delete(session, owner_id)
+    Owner.delete(owner_id)
     print(f'Owner with id {owner_id} deleted')
-    session.close()
 
 def list_cars():
-    session = Session()
-    cars = Car.get_all(session)
+    cars = Car.get_all()
     for car in cars:
         print(car)
-    session.close()
 
 def find_car_by_id():
-    session = Session()
     car_id = input("Enter the car's id: ")
-    car = Car.find_by_id(session, car_id)
+    car = Car.find_by_id(car_id)
     print(car) if car else print(f'Car with id {car_id} not found')
-    session.close()
 
 def create_car():
-    session = Session()
     number_plate = input("Enter the car's number plate: ")
     time_of_arrival = input("Enter the time of arrival (YYYY-MM-DD HH:MM:SS): ")
     expected_stay = input("Enter the expected stay duration in hours: ")
@@ -58,42 +44,35 @@ def create_car():
     try:
         time_of_arrival = datetime.datetime.strptime(time_of_arrival, '%Y-%m-%d %H:%M:%S')
         expected_stay = int(expected_stay)
-        car = Car.create(session, number_plate, time_of_arrival, expected_stay, owner_id)
-        print(f'Success: {car}')
+        car_id = Car.create(number_plate, time_of_arrival, expected_stay, owner_id)
+        print(f'Car created with id: {car_id}')
     except Exception as exc:
         print("Error adding car: ", exc)
-    session.close()
 
 def update_expected_stay():
-    session = Session()
     car_id = input("Enter the car's id: ")
-    car = Car.find_by_id(session, car_id)
+    car = Car.find_by_id(car_id)
     if car:
         new_expected_stay = input("Enter the new expected stay duration in hours: ")
         try:
             new_expected_stay = int(new_expected_stay)
-            car.expected_stay = new_expected_stay
-            session.commit()
-            print(f'Success: {car}')
+            Car.update_expected_stay(car_id, new_expected_stay)
+            print(f'Expected stay updated for car with id: {car_id}')
         except Exception as exc:
             print("Error updating expected stay: ", exc)
     else:
         print(f'Car with id {car_id} not found')
-    session.close()
 
 def register_departure():
-    session = Session()
     car_id = input("Enter the car's id: ")
-    car = Car.find_by_id(session, car_id)
+    car = Car.find_by_id(car_id)
     if car:
         time_of_departure = input("Enter the time of departure (YYYY-MM-DD HH:MM:SS): ")
         try:
             time_of_departure = datetime.datetime.strptime(time_of_departure, '%Y-%m-%d %H:%M:%S')
-            car.time_of_departure = time_of_departure
-            session.commit()
-            print(f'Success: {car}')
+            Car.register_departure(car_id, time_of_departure)
+            print(f'Departure registered for car with id: {car_id}')
         except Exception as exc:
             print("Error registering departure: ", exc)
     else:
         print(f'Car with id {car_id} not found')
-    session.close()

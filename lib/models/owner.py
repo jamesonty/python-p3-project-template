@@ -1,36 +1,38 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from . import Base
+import sqlite3
 
-class Owner(Base):
-    __tablename__ = 'owners'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-
-    cars = relationship('Car', back_populates='owner', cascade='all, delete, delete-orphan')
-
-    def __repr__(self):
-        return f"<Owner(name={self.name})>"
+class Owner:
+    @classmethod
+    def create(cls, name):
+        conn = sqlite3.connect('parking_lot.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO owners (name) VALUES (?)', (name,))
+        conn.commit()
+        owner_id = cursor.lastrowid
+        conn.close()
+        return owner_id
 
     @classmethod
-    def create(cls, session, name):
-        owner = cls(name=name)
-        session.add(owner)
-        session.commit()
+    def delete(cls, owner_id):
+        conn = sqlite3.connect('parking_lot.db')
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM owners WHERE id = ?', (owner_id,))
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def get_all(cls):
+        conn = sqlite3.connect('parking_lot.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM owners')
+        owners = cursor.fetchall()
+        conn.close()
+        return owners
+
+    @classmethod
+    def find_by_id(cls, owner_id):
+        conn = sqlite3.connect('parking_lot.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM owners WHERE id = ?', (owner_id,))
+        owner = cursor.fetchone()
+        conn.close()
         return owner
-
-    @classmethod
-    def delete(cls, session, owner_id):
-        owner = session.query(cls).filter_by(id=owner_id).first()
-        if owner:
-            session.delete(owner)
-            session.commit()
-
-    @classmethod
-    def get_all(cls, session):
-        return session.query(cls).all()
-
-    @classmethod
-    def find_by_id(cls, session, owner_id):
-        return session.query(cls).filter_by(id=owner_id).first()

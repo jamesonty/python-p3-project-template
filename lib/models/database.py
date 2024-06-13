@@ -1,11 +1,31 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+import sqlite3
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+def initialize_db():
+    conn = sqlite3.connect('parking_lot.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS owners (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL
+    )
+    ''')
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS cars (
+        id INTEGER PRIMARY KEY,
+        number_plate TEXT NOT NULL,
+        time_of_arrival TEXT NOT NULL,
+        expected_stay REAL NOT NULL,
+        time_of_departure TEXT,
+        owner_id INTEGER NOT NULL,
+        FOREIGN KEY (owner_id) REFERENCES owners (id)
+    )
+    ''')
+    
+    conn.commit()
+    conn.close()
+    print("Database initialized successfully.")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
+if __name__ == '__main__':
+    initialize_db()
