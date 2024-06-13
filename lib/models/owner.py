@@ -36,3 +36,11 @@ class Owner:
         owner = cursor.fetchone()
         conn.close()
         return owner
+
+    @classmethod
+    def update(cls, owner_id, new_name):
+        conn = sqlite3.connect('parking_lot.db')
+        cursor = conn.cursor()
+        cursor.execute('UPDATE owners SET name = ? WHERE id = ?', (new_name, owner_id))
+        conn.commit()
+        conn.close()
