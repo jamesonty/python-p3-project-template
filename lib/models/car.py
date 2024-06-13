@@ -32,12 +32,36 @@ class Car:
         return car
 
     @classmethod
+    def find_by_owner_id(cls, owner_id):
+        conn = sqlite3.connect('parking_lot.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM cars WHERE owner_id = ?', (owner_id,))
+        cars = cursor.fetchall()
+        conn.close()
+        return cars
+
+    @classmethod
     def update_expected_stay(cls, car_id, new_expected_stay):
         conn = sqlite3.connect('parking_lot.db')
         cursor = conn.cursor()
         cursor.execute('UPDATE cars SET expected_stay = ? WHERE id = ?', (new_expected_stay, car_id))
         conn.commit()
         conn.close()
+
+    @classmethod
+    def delete(cls, car_id, conn=None):
+        close_conn = False
+        if conn is None:
+            conn = sqlite3.connect('parking_lot.db')
+            close_conn = True
+
+        
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM cars WHERE id = ?', (car_id,))
+        conn.commit()
+
+        if close_conn:
+            conn.close()    
 
     @classmethod
     def register_departure(cls, car_id, time_of_departure):

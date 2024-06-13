@@ -3,7 +3,7 @@ from models.owner import Owner
 from models.car import Car
 
 def exit_program():
-    print("Goodbye!")
+    print("Enjoy the day ahead!")
     exit()
 
 def list_owners():
