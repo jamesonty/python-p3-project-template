@@ -1,6 +1,6 @@
-from lib.models.car import Car
-from lib.models.owner import Owner
-from lib.database import SessionLocal
+from models import initialize_db, Session
+from models.owner import Owner
+from models.car import Car
 import datetime
 
 def exit_program():
@@ -8,49 +8,49 @@ def exit_program():
     exit()
 
 def list_owners():
-    session = SessionLocal()
+    session = Session()
     owners = Owner.get_all(session)
     for owner in owners:
         print(owner)
     session.close()
 
 def find_owner_by_id():
-    session = SessionLocal()
+    session = Session()
     owner_id = input("Enter the owner's id: ")
     owner = Owner.find_by_id(session, owner_id)
     print(owner) if owner else print(f'Owner with id {owner_id} not found')
     session.close()
 
 def create_owner():
-    session = SessionLocal()
+    session = Session()
     name = input("Enter the owner's name: ")
     owner = Owner.create(session, name)
     print(f'Success: {owner}')
     session.close()
 
 def delete_owner():
-    session = SessionLocal()
+    session = Session()
     owner_id = input("Enter the owner's id: ")
     Owner.delete(session, owner_id)
     print(f'Owner with id {owner_id} deleted')
     session.close()
 
 def list_cars():
-    session = SessionLocal()
+    session = Session()
     cars = Car.get_all(session)
     for car in cars:
         print(car)
     session.close()
 
 def find_car_by_id():
-    session = SessionLocal()
+    session = Session()
     car_id = input("Enter the car's id: ")
     car = Car.find_by_id(session, car_id)
     print(car) if car else print(f'Car with id {car_id} not found')
     session.close()
 
 def create_car():
-    session = SessionLocal()
+    session = Session()
     number_plate = input("Enter the car's number plate: ")
     time_of_arrival = input("Enter the time of arrival (YYYY-MM-DD HH:MM:SS): ")
     expected_stay = input("Enter the expected stay duration in hours: ")
@@ -65,7 +65,7 @@ def create_car():
     session.close()
 
 def update_expected_stay():
-    session = SessionLocal()
+    session = Session()
     car_id = input("Enter the car's id: ")
     car = Car.find_by_id(session, car_id)
     if car:
@@ -82,7 +82,7 @@ def update_expected_stay():
     session.close()
 
 def register_departure():
-    session = SessionLocal()
+    session = Session()
     car_id = input("Enter the car's id: ")
     car = Car.find_by_id(session, car_id)
     if car:
